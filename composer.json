@@ -1,0 +1,15 @@
+{
+    "name": "planetthecloud/mofh-callback-client",
+    "description": "API Callback client for MyOwnFreeHost in PHP",
+    "type": "library",
+    "license": "Apache-2.0",
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "PlanetTheCloud\\MofhCallbackClient\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    }
+}
