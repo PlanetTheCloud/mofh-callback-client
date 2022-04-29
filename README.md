@@ -78,15 +78,15 @@ The following exceptions are thrown by the `handle` method:
 - InvalidCallbackParameters: Thrown when the callback data is invalid.
 - IpAddressMismatched: Thrown when the IP address of the caller does not match the allowed IP address given in the `create` method.
 
-# License
-Copyright 2022 PlanetTheCloud
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
-
 ## Support
 Support is offered for problems related to errors/bugs that may be present in the library.  
 If you seek programming support, this is not the place.  
 <a href="https://discord.gg/mmEWpnwB8D"><img src="https://discordapp.com/api/guilds/399429466566426635/widget.png?style=banner2" alt="Join our Discord Server" title="Planet Dev Network"></a>
+
+# License
+Copyright 2022 PlanetTheCloud
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
