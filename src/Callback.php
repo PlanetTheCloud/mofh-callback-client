@@ -33,6 +33,11 @@ class Callback
     protected $sqlServerCallback;
 
     /**
+     * @var callable
+     */
+    protected $deletedCallback;
+
+    /**
      * Create a new client
      *
      * @param array $parameters
@@ -119,6 +124,18 @@ class Callback
     }
 
     /**
+     * Set the deleted callback
+     *
+     * @param function $callback
+     *
+     * @return void
+     */
+    public function onAccountDeleted(callable $callback)
+    {
+        $this->deletedCallback = $callback;
+    }
+
+    /**
      * Handle the callback
      *
      * @param array $data
@@ -161,6 +178,9 @@ class Callback
                     break;
                 case 'REACTIVATE':
                     call_user_func($this->reactivatedCallback, $data['username'], $data);
+                    break;
+                case 'DELETE':
+                    call_user_func($this->deletedCallback, $data['username'], $data);
                     break;
                 default:
                     throw new InvalidCallbackParameters("Invalid status: {$data['status']}");
