@@ -31,6 +31,9 @@ Here are the list of the methods and the parameters that will be given to the ca
   - username: vPanel username of the account.
   - cluster: sql cluster of the account.
   - raw: Raw callback data.
+- onAccountDeleted
+  - username: vPanel username of the account.
+  - raw: Raw callback data. 
 
 The `handle` method accepts the following parameters:
 - data: Callback data from MyOwnFreeHost.
