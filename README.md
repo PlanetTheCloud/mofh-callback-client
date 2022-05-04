@@ -41,8 +41,9 @@ The `handle` method accepts the following parameters:
 
 There are also methods to inspect the callback before and after it is handled.  
 The following methods accepts a callbable as the parameter.  
-The `beforeCallback` method will be called before the callback is handled.  
-The `afterCallback` method will be called after the callback is handled.  
+- `beforeCallback`: called before the callback is handled.  
+- `afterCallback`: called after the callback is handled.  
+
 The callable will be given the following parameters:
 - data: Callback data from MyOwnFreeHost.
 - ip: (optional) IP address of the caller. **NOT MyOwnFreeHost's IP**.
