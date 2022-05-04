@@ -36,6 +36,16 @@ The `handle` method accepts the following parameters:
 - data: Callback data from MyOwnFreeHost.
 - ip: (optional) IP address of the caller. **NOT MyOwnFreeHost's IP**.
 
+There are also methods to inspect the callback before and after it is handled.  
+The following methods accepts a callbable as the parameter.  
+The `beforeCallback` method will be called before the callback is handled.  
+The `afterCallback` method will be called after the callback is handled.  
+The callable will be given the following parameters:
+- data: Callback data from MyOwnFreeHost.
+- ip: (optional) IP address of the caller. **NOT MyOwnFreeHost's IP**.
+
+on the `beforeCallback` method, you can set `$this->shouldHandle = false` to prevent the callback from being handled. It is not recommended to log the callback with `beforeCallback` as it is executed before any validation is performed.
+
 ## Example
 ```php
 use PlanetTheCloud\MofhCallbackClient\Callback;
@@ -63,6 +73,27 @@ $callback->onAccountReactivated(function ($username) {
 // Function to be executed when SQL cluster callback is received
 $callback->onSqlServer(function ($username, $cluster) {
     echo "Account {$username} has been moved to the {$cluster} cluster";
+});
+
+// Function to be executed when an account has been deleted
+$callback->onAccountDeleted(function ($username) {
+    echo "Account {$username} has been deleted";
+});
+
+// Function to be executed before the callback is handled
+$callback->beforeCallback(function ($data, $ip) {
+    // Do something before the callback is handled
+    // Here are just an example
+    if($data['status'] == 'SUSPENDED') {
+        // This will skip handling of any callback with status SUSPENDED
+        $this->shouldHandle = false;
+    }
+});
+
+// Function to be executed after the callback is handled
+$callback->afterCallback(function ($data, $ip) {
+    file_put_contents('/tmp/mofh-callback-client.log', json_encode($data) . PHP_EOL, FILE_APPEND);
+    echo "Callback has been logged to file";
 });
 
 // Wrap in a try-catch block. See Exception section for more information

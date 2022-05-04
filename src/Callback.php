@@ -13,6 +13,11 @@ class Callback
     protected $parameters;
 
     /**
+     * @var bool
+     */
+    protected $shouldHandle = true;
+
+    /**
      * @var callable
      */
     protected $activatedCallback;
@@ -36,6 +41,16 @@ class Callback
      * @var callable
      */
     protected $deletedCallback;
+
+    /**
+     * @var callable
+     */
+    protected $beforeCallback;
+
+    /**
+     * @var callable
+     */
+    protected $afterCallback;
 
     /**
      * Create a new client
@@ -136,6 +151,18 @@ class Callback
     }
 
     /**
+     * Middleware before callback is handled
+     *
+     * @param callable $callback
+     *
+     * @return void
+     */
+    public function beforeCallback(callable $callback)
+    {
+        $this->beforeCallback = $callback;
+    }
+
+    /**
      * Handle the callback
      *
      * @param array $data
@@ -148,6 +175,14 @@ class Callback
      */
     public function handle(array $data = [], string $ip = null)
     {
+        if (isset($this->beforeCallback)) {
+            call_user_func($this->beforeCallback, $data, $ip);
+        }
+
+        if (!$this->shouldHandle) {
+            return;
+        }
+
         $ip = ($ip) ? $ip : $_SERVER['REMOTE_ADDR'];
         if ($ip !== $this->parameters['ip']) {
             throw new IpAddressMismatched("Caller IP address ({$ip}) does not match the allowed IP address.");
@@ -185,6 +220,10 @@ class Callback
                 default:
                     throw new InvalidCallbackParameters("Invalid status: {$data['status']}");
             }
+        }
+
+        if (isset($this->afterCallback)) {
+            call_user_func($this->afterCallback, $data, $ip);
         }
     }
 }
