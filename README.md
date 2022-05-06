@@ -14,6 +14,7 @@ The `create` method accepts the following parameters:
 **Where to find the IP address of MyOwnFreeHost?**  
 You can find the IP address from the [Reseller Panel](https://panel.myownfreehost.net/). Login and go to API -> Setup WHM API -> Select the domain you want to configure, and copy the IP address shown beside "MyOwnFreeHost IP address to connect to".
 
+**Callback Handlers**  
 The following methods accepts a callable as the parameter.  
 These methods will be called accordingly with the callback from MyOwnFreeHost.  
 Here are the list of the methods and the parameters that will be given to the callable:
@@ -24,6 +25,7 @@ Here are the list of the methods and the parameters that will be given to the ca
   - username: vPanel username of the account.
   - reason: Reason for suspension.
   - raw: Raw callback data.
+  - common_reason: Common reason for suspension, see `parseCommonSuspensionReason` section below.
 - onAccountReactivated
   - username: vPanel username of the account.
   - raw: Raw callback data.
@@ -35,12 +37,14 @@ Here are the list of the methods and the parameters that will be given to the ca
   - username: vPanel username of the account.
   - raw: Raw callback data. 
 
+**Handler**  
 The `handle` method accepts the following parameters:
 - data: Callback data from MyOwnFreeHost.
 - ip: (optional) IP address of the caller. **NOT MyOwnFreeHost's IP**.
 
+**Inspect Callback**  
 There are also methods to inspect the callback before and after it is handled.  
-The following methods accepts a callbable as the parameter.  
+The following methods accepts a callbable as the parameter:  
 - `beforeCallback`: called before the callback is handled.  
 - `afterCallback`: called after the callback is handled.  
 
@@ -49,6 +53,11 @@ The callable will be given the following parameters:
 - ip: (optional) IP address of the caller. **NOT MyOwnFreeHost's IP**.
 
 on the `beforeCallback` method, you can set `$this->shouldHandle = false` to prevent the callback from being handled. It is not recommended to log the callback with `beforeCallback` as it is executed before any validation is performed.
+
+**Parsing Common Suspension Reason**
+The `parseCommonSuspensionReason` method accepts the following parameters:
+- reason: Raw suspension reason from MyOwnFreeHost.
+Which will either return null if the reason is not related to daily suspension, or the reason itself in a short form (eg. DAILY_HIT, DAILY_CPU, DAILY_IO, DAILY_EP).  
 
 ## Example
 ```php
@@ -65,8 +74,12 @@ $callback->onAccountActivated(function ($username) {
 });
 
 // Function to be executed when an account has been suspended
-$callback->onAccountSuspended(function ($username, $reason) {
+$callback->onAccountSuspended(function ($username, $reason, ..., $common_reason) {
     echo "Account {$username} has been suspended with the following reason: {$reason}";
+    if ($common_reason) {
+        $reason = str_replace(['DAILY_EP', 'DAILY_CPU', 'DAILY_HIT', 'DAILY_IO'], ['Entry Process', 'CPU Usage', 'Website Hits', 'Input/Output'], $common_reason);
+    }
+    echo "Your account has been suspended because the daily {$reason} quota has been exhausted";
 });
 
 // Function to be executed when an account has been reactivated

@@ -163,6 +163,35 @@ class Callback
     }
 
     /**
+     * Middleware after callback is handled
+     *
+     * @param callable $callback
+     *
+     * @return void
+     */
+    public function afterCallback(callable $callback)
+    {
+        $this->afterCallback = $callback;
+    }
+
+    /**
+     * Parse Common Suspension Reason
+     * Returns DAILY_HIT, DAILY_CPU, DAILY_EP,
+     * DAILY_IO, or NULL if uncommon
+     *
+     * @param string $reason
+     *
+     * @return string
+     */
+    public function parseCommonSuspensionReason($reason)
+    {
+        if (strpos($reason, 'DAILY') === false || strpos($reason, 'RES_CLOSE') !== false) {
+            return null;
+        }
+        return strtoupper(str_replace([' ', 'ADMIN_CLOSE:', ';'], '', $reason));
+    }
+
+    /**
      * Handle the callback
      *
      * @param array $data
@@ -209,7 +238,7 @@ class Callback
                     call_user_func($this->activatedCallback, $data['username'], $data);
                     break;
                 case 'SUSPENDED':
-                    call_user_func($this->suspendedCallback, $data['username'], $data['comments'], $data);
+                    call_user_func($this->suspendedCallback, $data['username'], $data['comments'], $data, $this->parseCommonSuspensionReason($data['comments']));
                     break;
                 case 'REACTIVATE':
                     call_user_func($this->reactivatedCallback, $data['username'], $data);
